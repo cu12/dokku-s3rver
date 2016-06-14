@@ -35,29 +35,19 @@ teardown() {
 
 @test "($PLUGIN_COMMAND_PREFIX:promote) error when the service is already promoted" {
   run dokku "$PLUGIN_COMMAND_PREFIX:promote" l my_app
-  assert_contains "${lines[*]}" "already promoted as DATABASE_URL"
+  assert_contains "${lines[*]}" "already promoted as S3_URL"
 }
 
-@test "($PLUGIN_COMMAND_PREFIX:promote) changes DATABASE_URL" {
-  password="$(cat "$PLUGIN_DATA_ROOT/l/PASSWORD")"
-  dokku config:set my_app "DATABASE_URL=mysql://u:p@host:3306/db" "DOKKU_MYSQL_BLUE_URL=mysql://mysql:$password@dokku-mysql-l:3306/l"
+@test "($PLUGIN_COMMAND_PREFIX:promote) changes S3_URL" {
+  dokku config:set my_app "S3_URL=http://host" "DOKKU_S3_BLUE_URL=http://dokku-s3-l:5000"
   dokku "$PLUGIN_COMMAND_PREFIX:promote" l my_app
-  url=$(dokku config:get my_app DATABASE_URL)
-  assert_equal "$url" "mysql://mysql:$password@dokku-mysql-l:3306/l"
+  url=$(dokku config:get my_app S3_URL)
+  assert_equal "$url" "http://dokku-s3-l:5000"
 }
 
 @test "($PLUGIN_COMMAND_PREFIX:promote) creates new config url when needed" {
-  password="$(cat "$PLUGIN_DATA_ROOT/l/PASSWORD")"
-  dokku config:set my_app "DATABASE_URL=mysql://u:p@host:3306/db" "DOKKU_MYSQL_BLUE_URL=mysql://mysql:$password@dokku-mysql-l:3306/l"
+  dokku config:set my_app "S3_URL=http://host" "DOKKU_S3_BLUE_URL=http://dokku-s3-l:5000"
   dokku "$PLUGIN_COMMAND_PREFIX:promote" l my_app
   run dokku config my_app
-  assert_contains "${lines[*]}" "DOKKU_MYSQL_"
-}
-
-@test "($PLUGIN_COMMAND_PREFIX:promote) uses MYSQL_DATABASE_SCHEME variable" {
-  password="$(cat "$PLUGIN_DATA_ROOT/l/PASSWORD")"
-  dokku config:set my_app "MYSQL_DATABASE_SCHEME=mysql2" "DATABASE_URL=mysql://u:p@host:3306/db" "DOKKU_MYSQL_BLUE_URL=mysql2://mysql:$password@dokku-mysql-l:3306/l"
-  dokku "$PLUGIN_COMMAND_PREFIX:promote" l my_app
-  url=$(dokku config:get my_app DATABASE_URL)
-  assert_contains "$url" "mysql2://mysql:$password@dokku-mysql-l:3306/l"
+  assert_contains "${lines[*]}" "DOKKU_S3RVER_"
 }

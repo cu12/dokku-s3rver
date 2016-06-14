@@ -3,13 +3,13 @@ export DOKKU_QUIET_OUTPUT=1
 export DOKKU_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/dokku"
 export DOKKU_VERSION=${DOKKU_VERSION:-"master"}
 export PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/bin:$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/dokku:$PATH"
-export PLUGIN_COMMAND_PREFIX="mysql"
+export PLUGIN_COMMAND_PREFIX="s3"
 export PLUGIN_PATH="$DOKKU_ROOT/plugins"
 export PLUGIN_ENABLED_PATH="$PLUGIN_PATH"
 export PLUGIN_AVAILABLE_PATH="$PLUGIN_PATH"
 export PLUGIN_CORE_AVAILABLE_PATH="$PLUGIN_PATH"
-export MYSQL_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/fixtures"
-export PLUGIN_DATA_ROOT="$MYSQL_ROOT"
+export S3RVER_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/fixtures"
+export PLUGIN_DATA_ROOT="$S3RVER_ROOT"
 if [[ "$(uname)" == "Darwin" ]]; then
   export PLUGN_URL="https://github.com/dokku/plugn/releases/download/v0.2.1/plugn_0.2.1_darwin_x86_64.tgz"
 else

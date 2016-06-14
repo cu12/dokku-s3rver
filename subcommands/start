@@ -4,7 +4,7 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 source "$PLUGIN_BASE_PATH/common/functions"
 source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
 
-fakes3-start-cmd() {
+s3rver-start-cmd() {
   declare desc="start a previously stopped $PLUGIN_SERVICE service"
   local cmd="$PLUGIN_COMMAND_PREFIX:start" argv=("$@"); [[ ${argv[0]} == "$cmd" ]] && shift 1
   declare SERVICE="$1"
@@ -14,4 +14,4 @@ fakes3-start-cmd() {
   service_start "$SERVICE"
 }
 
-fakes3-start-cmd "$@"
+s3rver-start-cmd "$@"

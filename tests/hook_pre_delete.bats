@@ -8,6 +8,7 @@ setup() {
 }
 
 teardown() {
+  :
   dokku "$PLUGIN_COMMAND_PREFIX:unlink" l my_app >&2
   dokku --force "$PLUGIN_COMMAND_PREFIX:destroy" l >&2
   rm "$DOKKU_ROOT/my_app" -rf

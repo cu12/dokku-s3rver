@@ -4,12 +4,12 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 source "$PLUGIN_BASE_PATH/common/functions"
 source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
 
-s3rver-create-cmd() {
-  declare desc="create a $PLUGIN_SERVICE service"
-  local cmd="$PLUGIN_COMMAND_PREFIX:create" argv=("$@"); [[ ${argv[0]} == "$cmd" ]] && shift 1
+s3rver-destroy-cmd() {
+  declare desc="delete a bucket from $PLUGIN_SERVICE service"
+  local cmd="$PLUGIN_COMMAND_PREFIX:bucket:destroy" argv=("$@"); [[ ${argv[0]} == "$cmd" ]] && shift 1
   declare SERVICE="$1"
-
-  service_create "$SERVICE"
+  declare BUCKET="$2"
+  service_destroy_bucket "$SERVICE" "$BUCKET"
 }
 
-s3rver-create-cmd "$@"
+s3rver-destroy-cmd "$@"

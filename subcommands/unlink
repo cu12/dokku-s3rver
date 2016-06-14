@@ -4,7 +4,7 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 source "$PLUGIN_BASE_PATH/common/functions"
 source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
 
-fakes3-unlink-cmd() {
+s3rver-unlink-cmd() {
   declare desc="unlink the $PLUGIN_SERVICE service from the app"
   local cmd="$PLUGIN_COMMAND_PREFIX:unlink" argv=("$@"); [[ ${argv[0]} == "$cmd" ]] && shift 1
   declare SERVICE="$1" APP="$2"
@@ -17,4 +17,4 @@ fakes3-unlink-cmd() {
   service_unlink "$SERVICE" "$APP"
 }
 
-fakes3-unlink-cmd "$@"
+s3rver-unlink-cmd "$@"

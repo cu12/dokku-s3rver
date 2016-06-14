@@ -4,7 +4,7 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 source "$PLUGIN_BASE_PATH/common/functions"
 source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
 
-fakes3-info-cmd() {
+s3rver-info-cmd() {
   declare desc="print the connection information"
   local cmd="$PLUGIN_COMMAND_PREFIX:info" argv=("$@"); [[ ${argv[0]} == "$cmd" ]] && shift 1
   declare SERVICE="$1"
@@ -14,4 +14,4 @@ fakes3-info-cmd() {
   service_info "$SERVICE"
 }
 
-fakes3-info-cmd "$@"
+s3rver-info-cmd "$@"

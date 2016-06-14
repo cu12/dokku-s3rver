@@ -4,7 +4,7 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 source "$PLUGIN_BASE_PATH/common/functions"
 source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
 
-fakes3-logs-cmd() {
+s3rver-logs-cmd() {
   declare desc="print the most recent log(s) for this service"
   local cmd="$PLUGIN_COMMAND_PREFIX:logs" argv=("$@"); [[ ${argv[0]} == "$cmd" ]] && shift 1
   declare SERVICE="$1" TAIL="$2"
@@ -14,4 +14,4 @@ fakes3-logs-cmd() {
   service_logs "$SERVICE" "$TAIL"
 }
 
-fakes3-logs-cmd "$@"
+s3rver-logs-cmd "$@"

@@ -19,6 +19,18 @@ case "$1" in
     "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/subcommands/destroy" "$@"
     ;;
 
+  $PLUGIN_COMMAND_PREFIX:bucket:create)
+    "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/subcommands/bucket-create" "$@"
+    ;;
+
+  $PLUGIN_COMMAND_PREFIX:bucket:destroy)
+    "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/subcommands/bucket-destroy" "$@"
+    ;;
+
+  $PLUGIN_COMMAND_PREFIX:bucket:list)
+    "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/subcommands/bucket-list" "$@"
+    ;;
+
   $PLUGIN_COMMAND_PREFIX:expose)
     "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/subcommands/expose" "$@"
     ;;
@@ -70,6 +82,8 @@ case "$1" in
       cat<<help_content
     $PLUGIN_COMMAND_PREFIX:create <name>, Create a $PLUGIN_SERVICE service
     $PLUGIN_COMMAND_PREFIX:destroy <name>, Delete the $PLUGIN_SERVICE service and stop its container if there are no links left
+    $PLUGIN_COMMAND_PREFIX:bucket:create <name>, Create a fake s3 bucket with $PLUGIN_SERVICE service
+    $PLUGIN_COMMAND_PREFIX:bucket:destroy <name>, Destroy a fake s3 bucket with $PLUGIN_SERVICE service
     $PLUGIN_COMMAND_PREFIX:expose <name> [port], Expose a $PLUGIN_SERVICE service on custom port if provided (random port otherwise)
     $PLUGIN_COMMAND_PREFIX:info <name>, Print the connection information
     $PLUGIN_COMMAND_PREFIX:link <name> <app>, Link the $PLUGIN_SERVICE service to the app

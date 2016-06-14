@@ -360,7 +360,7 @@ service_create_container() {
   local SERVICE_ROOT="$PLUGIN_DATA_ROOT/$SERVICE"
   local SERVICE_NAME="$(get_service_name "$SERVICE")"
 
-  ID=$(docker run --name "$SERVICE_NAME" -v "$SERVICE_ROOT/data:/var/lib/fakes3_root" -d --restart always --label dokku=service --label dokku.service=fakes3 "$PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION")
+  ID=$(docker run --name "$SERVICE_NAME" -v "$SERVICE_ROOT/data:/tmp" -d --restart always --label dokku=service --label dokku.service=s3rver "$PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION")
   echo "$ID" > "$SERVICE_ROOT/ID"
 
   dokku_log_verbose_quiet "Waiting for container to be ready"
@@ -368,6 +368,79 @@ service_create_container() {
 
   dokku_log_info2 "$PLUGIN_SERVICE container created: $SERVICE"
   service_info "$SERVICE"
+}
+
+verify_bucket_name() {
+  local SERVICE="$1"
+  local BUCKET_NAME="$2"
+  local AWS_CONFIG="AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake AWS_DEFAULT_REGION=fake"
+  [[ ! -n "$SERVICE" ]] && dokku_log_fail "(verify_bucket_name) SERVICE must not be null"
+  [[ ! -n "$BUCKET_NAME" ]] && dokku_log_fail "(verify_bucket_name) BUCKET_NAME must not be null"
+  [[ ! -d "$PLUGIN_DATA_ROOT/$SERVICE" ]] && dokku_log_fail "$PLUGIN_SERVICE service $SERVICE does not exist"
+  SERVICE_NAME="$(get_service_name "$SERVICE")"
+  SERVICE_BUCKET_NAME="$(docker exec "$SERVICE_NAME" /usr/bin/env sh -c "$AWS_CONFIG aws --endpoint-url http://localhost:5000 s3 ls --output text | cut -c21- | egrep ^$BUCKET_NAME$")"
+  return 0
+}
+
+verify_bucket_create_name() {
+  local SERVICE="$1"
+  local BUCKET_NAME="$2"
+  verify_bucket_name "$SERVICE" "$BUCKET_NAME"
+  if [[ -n "$SERVICE_BUCKET_NAME" ]]; then
+    dokku_log_fail "$PLUGIN_SERVICE service $SERVICE bucket already exist: $BUCKET_NAME"
+  fi
+  return 0
+}
+
+verify_bucket_destroy_name() {
+  local SERVICE="$1"
+  local BUCKET_NAME="$2"
+  verify_bucket_name "$SERVICE" "$BUCKET_NAME"
+  if [[ -z "$SERVICE_BUCKET_NAME" ]]; then
+    dokku_log_fail "$PLUGIN_SERVICE service $SERVICE bucket does not exist: $BUCKET_NAME"
+  fi
+  return 0
+}
+
+service_create_bucket() {
+  local SERVICE="$1"
+  local BUCKET="$2"
+  [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a name for the service"
+  [[ -z "$BUCKET" ]] && dokku_log_fail "Please specify a name for the bucket"
+  verify_service_name "$SERVICE"
+  verify_bucket_create_name "$SERVICE" "$BUCKET"
+  AWS_CONFIG="AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake AWS_DEFAULT_REGION=fake"
+  [[ -n $SSH_TTY ]] && stty -opost
+    # shellcheck disable=SC2069
+    docker exec "$SERVICE_NAME" /usr/bin/env sh -c "$AWS_CONFIG aws --endpoint-url http://localhost:5000 s3 mb s3://$BUCKET --output text" || dokku_log_fail "$PLUGIN_SERVICE failed to create bucket: $BUCKET"
+  [[ -n $SSH_TTY ]] && stty opost
+  dokku_log_info2 "$PLUGIN_SERVICE bucket created: $BUCKET"
+}
+
+service_destroy_bucket() {
+  local SERVICE="$1"
+  local BUCKET="$2"
+  [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a name for the service"
+  [[ -z "$BUCKET" ]] && dokku_log_fail "Please specify a name for the bucket"
+  verify_service_name "$SERVICE"
+  verify_bucket_destroy_name "$SERVICE" "$BUCKET"
+  AWS_CONFIG="AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake AWS_DEFAULT_REGION=fake"
+  [[ -n $SSH_TTY ]] && stty -opost
+    # shellcheck disable=SC2069
+    docker exec "$SERVICE_NAME" /usr/bin/env sh -c "$AWS_CONFIG aws --endpoint-url http://localhost:5000 s3 rb s3://$BUCKET --force --output text" || dokku_log_fail "$PLUGIN_SERVICE failed to destroy bucket: $BUCKET"
+  [[ -n $SSH_TTY ]] && stty opost
+  dokku_log_info2 "$PLUGIN_SERVICE bucket deleted: $BUCKET"
+}
+
+service_list_buckets() {
+  local SERVICE="$1"
+  [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a name for the service"
+  verify_service_name "$SERVICE"
+  local SERVICE_NAME="$(get_service_name "$SERVICE")"
+  AWS_CONFIG="AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake AWS_DEFAULT_REGION=fake"
+  [[ -n $SSH_TTY ]] && stty -opost
+  docker exec "$SERVICE_NAME" /usr/bin/env sh -c "$AWS_CONFIG aws --endpoint-url http://localhost:5000 s3 ls --output text"
+  [[ -n $SSH_TTY ]] && stty opost
 }
 
 service_start() {
@@ -400,5 +473,5 @@ service_url() {
   local SERVICE="$1"
   local SERVICE_ROOT="$PLUGIN_DATA_ROOT/$SERVICE"
   local SERVICE_ALIAS="$(service_alias "$SERVICE")"
-  echo "$PLUGIN_SCHEME://$SERVICE_ALIAS:${PLUGIN_DATASTORE_PORTS[0]}/$SERVICE"
+  echo "$PLUGIN_SCHEME://$SERVICE_ALIAS:${PLUGIN_DATASTORE_PORTS[0]}"
 }
