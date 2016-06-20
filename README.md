@@ -103,8 +103,8 @@ dokku s3:bucket create lolipop bucket
 # also list them
 dokku s3:bucket:list lolipop
 
-# and of course remove them
-dokku s3:bucket:remove lolipop bucket
+# and of course destroy them
+dokku s3:bucket:destroy lolipop bucket
 
 # you can also unlink a fake S3 service
 # NOTE: this will restart your app and unset related environment variables
