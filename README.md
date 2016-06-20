@@ -17,19 +17,21 @@ dokku plugin:install https://github.com/cu12/dokku-s3rver.git s3rver
 ## commands
 
 ```
-s3:create <name>            Create a fake S3 service with environment variables
-s3:destroy <name>           Delete the service and stop its container if there are no links left
-s3:expose <name> [port]     Expose a fake S3 service on custom port if provided (random port otherwise)
-s3:info <name>              Print the connection information
-s3:link <name> <app>        Link the fake S3 service to the app
-s3:list                     List all fake S3 services
-s3:logs <name> [-t]         Print the most recent log(s) for this service
-s3:promote <name> <app>     Promote service <name> as S3_URL in <app>
-s3:restart <name>           Graceful shutdown and restart of the s3 service container
-s3:start <name>             Start a previously stopped s3 service
-s3:stop <name>              Stop a running fake S3 service
-s3:unexpose <name>          Unexpose a previously exposed s3 service
-s3:unlink <name> <app>      Unlink the fake S3 service from the app
+s3:bucket:create <name>    Create a fake s3 bucket with s3rver service
+s3:bucket:destroy <name>   Destroy a fake s3 bucket with s3rver service
+s3:create <name>           Create a s3rver service
+s3:destroy <name>          Delete the s3rver service and stop its container if there are no links left
+s3:expose <name> [port]    Expose a s3rver service on custom port if provided (random port otherwise)
+s3:info <name>             Print the connection information
+s3:link <name> <app>       Link the s3rver service to the app
+s3:list                    List all s3rver services
+s3:logs <name> [-t]        Print the most recent log(s) for this service
+s3:promote <name> <app>    Promote service <name> as S3_URL in <app>
+s3:restart <name>          Graceful shutdown and restart of the s3rver service container
+s3:start <name>            Start a previously stopped s3rver service
+s3:stop <name>             Stop a running s3rver service
+s3:unexpose <name>         Unexpose a previously exposed s3rver service
+s3:unlink <name> <app>     Unlink the s3rver service from the app
 ```
 
 ## usage
@@ -94,6 +96,15 @@ dokku s3:promote other_service playground
 #   S3_URL=http://dokku-s3-other_service:5000/other_service
 #   DOKKU_S3RVER_BLUE_URL=http://dokku-s3-other-service:5000/other_service
 #   DOKKU_S3RVER_SILVER_URL=http://dokku-s3-lolipop:5000/lolipop
+
+# you can create S3 buckets
+dokku s3:bucket create lolipop bucket
+
+# also list them
+dokku s3:bucket:list lolipop
+
+# and of course remove them
+dokku s3:bucket:remove lolipop bucket
 
 # you can also unlink a fake S3 service
 # NOTE: this will restart your app and unset related environment variables
