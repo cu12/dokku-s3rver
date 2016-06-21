@@ -378,7 +378,7 @@ verify_bucket_name() {
   [[ ! -n "$BUCKET_NAME" ]] && dokku_log_fail "(verify_bucket_name) BUCKET_NAME must not be null"
   [[ ! -d "$PLUGIN_DATA_ROOT/$SERVICE" ]] && dokku_log_fail "$PLUGIN_SERVICE service $SERVICE does not exist"
   SERVICE_NAME="$(get_service_name "$SERVICE")"
-  SERVICE_BUCKET_NAME="$(docker exec "$SERVICE_NAME" /usr/bin/env sh -c "$AWS_CONFIG aws --endpoint-url http://localhost:5000 s3 ls --output text | cut -c21- | egrep ^$BUCKET_NAME$")"
+  SERVICE_BUCKET_NAME="$(docker exec "$SERVICE_NAME" /usr/bin/env sh -c "$AWS_CONFIG aws --endpoint-url http://localhost:5000 s3 ls --output text | cut -c21- | egrep ^$BUCKET_NAME$" || true)"
   return 0
 }
 
@@ -411,7 +411,6 @@ service_create_bucket() {
   verify_bucket_create_name "$SERVICE" "$BUCKET"
   AWS_CONFIG="AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake AWS_DEFAULT_REGION=fake"
   [[ -n $SSH_TTY ]] && stty -opost
-    # shellcheck disable=SC2069
     docker exec "$SERVICE_NAME" /usr/bin/env sh -c "$AWS_CONFIG aws --endpoint-url http://localhost:5000 s3 mb s3://$BUCKET --output text" || dokku_log_fail "$PLUGIN_SERVICE failed to create bucket: $BUCKET"
   [[ -n $SSH_TTY ]] && stty opost
   dokku_log_info2 "$PLUGIN_SERVICE bucket created: $BUCKET"
@@ -426,7 +425,6 @@ service_destroy_bucket() {
   verify_bucket_destroy_name "$SERVICE" "$BUCKET"
   AWS_CONFIG="AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake AWS_DEFAULT_REGION=fake"
   [[ -n $SSH_TTY ]] && stty -opost
-    # shellcheck disable=SC2069
     docker exec "$SERVICE_NAME" /usr/bin/env sh -c "$AWS_CONFIG aws --endpoint-url http://localhost:5000 s3 rb s3://$BUCKET --force --output text" || dokku_log_fail "$PLUGIN_SERVICE failed to destroy bucket: $BUCKET"
   [[ -n $SSH_TTY ]] && stty opost
   dokku_log_info2 "$PLUGIN_SERVICE bucket deleted: $BUCKET"
