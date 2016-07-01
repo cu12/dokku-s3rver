@@ -23,10 +23,3 @@ teardown() {
   run dokku "$PLUGIN_COMMAND_PREFIX:info" l
   assert_contains "${lines[*]}" "DSN: http://dokku-s3-l:5000"
 }
-
-@test "($PLUGIN_COMMAND_PREFIX:info) replaces underscores by dash in hostname" {
-  dokku "$PLUGIN_COMMAND_PREFIX:create" test_with_underscores
-  run dokku "$PLUGIN_COMMAND_PREFIX:info" test_with_underscores
-  assert_contains "${lines[*]}" "DSN: http://dokku-s3-test-with-underscores:5000"
-  dokku --force "$PLUGIN_COMMAND_PREFIX:destroy" test_with_underscores
-}
