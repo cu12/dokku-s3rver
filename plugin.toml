@@ -1,4 +1,4 @@
 [plugin]
-description = "dokku fakeS3 service plugin"
+description = "dokku fake S3 service plugin"
 version = "1.0.0"
 [plugin.config]

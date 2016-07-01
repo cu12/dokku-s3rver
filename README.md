@@ -63,7 +63,7 @@ dokku s3:link lolipop playground
 # the following environment variables will be set automatically by docker (not
 # on the app itself, so they won’t be listed when calling dokku config)
 #
-#   DOKKU_S3_LOLIPOP_NAME=/lolipop/DATABASE
+#   DOKKU_S3_LOLIPOP_NAME=/lolipop
 #   DOKKU_S3_LOLIPOP_PORT=tcp://172.17.0.1:5000
 #   DOKKU_S3_LOLIPOP_PORT_5000_TCP=tcp://172.17.0.1:5000
 #   DOKKU_S3_LOLIPOP_PORT_5000_TCP_PROTO=tcp
